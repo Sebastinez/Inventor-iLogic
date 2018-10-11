@@ -1,0 +1,28 @@
+﻿'define custom property collection
+oCustomPropertySet = ThisDoc.Document.PropertySets.Item("Inventor User Defined Properties")
+'look at each property in the collection
+For Each oCustProp In oCustomPropertySet
+'delete the custom iProperty
+oCustProp.Delete
+Next
+
+
+customPropertySet = ThisDoc.Document.PropertySets.Item("Inventor User Defined Properties")
+
+Dim iprop(6) As String
+iprop(1) = "Conjunto Padre"
+iprop(2) = "Cliente"
+iprop(3) = "Materia prima"
+iprop(4) = "Observaciones"
+iprop(5) = "Codigo Plano"
+
+For k = 1 To 5
+Dim prop(k) As String
+    Try
+        prop(k) = iProperties.Value("Custom", iprop(k))
+    Catch
+        'Assume error means not found
+        customPropertySet.Add("a", iprop(k))
+        iProperties.Value("Custom", iprop(k)) = "null"
+    End Try
+Next
