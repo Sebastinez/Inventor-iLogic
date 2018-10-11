@@ -1,0 +1,37 @@
+﻿
+oFolder = "N:\11-Ingeniería\01-Control de Documentos\03-Documentos a emitir\" & Format(Date.Today,"yyyyMMdd")' & "_" & Mid(ThisDoc.FileName, 3,4)
+RevNum = iProperties.Value("Project", "Revision Number")
+
+'Si la carpeta no se encuentra se consulta si se debe crear
+If Not System.IO.Directory.Exists(oFolder) Then
+	'confirmar = MessageBox.Show("No existe una carpeta con el nombre:"+vbCrLf+PDFPath+vbCrLf+MachinePath+vbCrLf+"Queres crearla?", "Carpeta faltante",MessageBoxButtons.YesNo,MessageBoxIcon.Question)
+	'If confirmar = vbYes Then
+    System.IO.Directory.CreateDirectory(oFolder)
+	'Else
+	'Return
+	'End If
+End If
+
+'Control de tipo de documento (si es Pieza, Conjunto o Plano y setea la variable extension acorde)
+DocType = ThisApplication.ActiveDocumentType
+
+DrawingCode = Left(ThisDoc.FileName, 18)
+DrawingName = Right(ThisDoc.FileName, Len(ThisDoc.FileName) - Len(DrawingCode))
+
+'Define según el documento que se debe hacer
+Select Case DocType
+Case "12291"
+	ThisDoc.Document.SaveAs(oFolder & "\" & DrawingCode & "-" & RevNum & DrawingName & ".jt", True)
+	MessageBox.Show("Se guardo el siguiente archivo:"+vbCrLf+DrawingCode+"-"+RevNum+DrawingName+".jt"+vbCrLf+vbCrLf+"En la carpeta"+vbCrLf+oFolder,"Paqueta de documentación armado",MessageBoxButtons.OK,MessageBoxIcon.Information)
+Case "12292"
+	jtCode = Left(ThisDrawing.ModelDocument.DisplayName, 18)
+	jtName = Right(ThisDrawing.ModelDocument.DisplayName, Len(ThisDrawing.ModelDocument.DisplayName) - Len(jtCode))
+	jtNamewithoutextension = Left(jtName, Len(jtName) - 4)
+	
+	ThisDrawing.ModelDocument.SaveAs(oFolder & "\" & jtCode &"-" &RevNum & jtNamewithoutextension & ".jt",True)
+	ThisDoc.Document.SaveAs(oFolder & "\" & DrawingCode & "-" & RevNum & DrawingName &".pdf", True)
+	MessageBox.Show("Se guardaron los siguientes archivos:"+vbCrLf+jtCode+"-"+RevNum+jtNamewithoutextension+".jt"+vbCrLf+DrawingCode+"-"+RevNum+DrawingName+".pdf"+vbCrLf+vbCrLf+"En la carpeta"+vbCrLf+oFolder,"Paqueta de documentación armado",MessageBoxButtons.OK,MessageBoxIcon.Information)
+Case "12290"
+	ThisDoc.Document.SaveAs(oFolder & "\" & DrawingCode & "-" & RevNum & DrawingName & ".jt", True)
+	MessageBox.Show("Se guardo el siguiente archivo:"+vbCrLf+DrawingCode+"-"+RevNum+DrawingName+".jt"+vbCrLf+vbCrLf+"En la carpeta"+vbCrLf+oFolder,"Paqueta de documentación armado",MessageBoxButtons.OK,MessageBoxIcon.Information)
+End Select

@@ -1,0 +1,28 @@
+﻿'query user
+'question = MessageBox.Show("is a .DXF Export Required", "iLogic Question",MessageBoxButtons.YesNo,MessageBoxIcon.Question)
+'set condition based on answer
+'If question = vbYes Then
+' Get the DXF translator Add-In.
+path_and_nameDXF = ThisDoc.PathAndFileName(False)
+Dim DXFAddIn As TranslatorAddIn
+DXFAddIn = ThisApplication.ApplicationAddIns.ItemById("{C24E3AC4-122E-11D5-8E91-0010B541CD80}")
+'Set a reference to the active document (the document to be published).
+Dim oDocument As Document
+oDocument = ThisApplication.ActiveDocument
+Dim oContext As TranslationContext
+oContext = ThisApplication.TransientObjects.CreateTranslationContext
+oContext.Type = IOMechanismEnum.kFileBrowseIOMechanism
+' Create a NameValueMap object
+Dim oOptions As NameValueMap
+oOptions = ThisApplication.TransientObjects.CreateNameValueMap
+' Create a DataMedium object
+Dim oDataMedium As DataMedium
+oDataMedium = ThisApplication.TransientObjects.CreateDataMedium
+If DXFAddIn.HasSaveCopyAsOptions(oDocument, oContext, oOptions) Then
+Dim strIniFile As String
+strIniFile = "C:\Users\smartinez.nuclearis\Documents\Inventor\DXF_EXPORT_INI\DXF_EXPORT.ini"
+oOptions.Value("Export_Acad_IniFile") = strIniFile
+End If
+oDataMedium.FileName = path_and_nameDXF & ".dxf"
+Call DXFAddIn.SaveCopyAs(oDocument, oContext, oOptions, oDataMedium)
+'End If 
